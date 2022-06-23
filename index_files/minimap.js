@@ -23,7 +23,7 @@
   var $about = $domElement.find('#about').load(updateCount);
   // var $tour = $domElement.find('#tour').load(updateCount);
   // var $heatvision = $domElement.find('#heatvision').load(updateCount);
-  var $sound = $domElement.find('#sound').load(updateCount);
+  // var $sound = $domElement.find('#sound').load(updateCount);
   // var $soundoff = $domElement.find('#soundoff').load(updateCount);
   // var $backdrop = $domElement.find("#zoom-backdrop");
   var $cursor = $domElement.find('#zoom-cursor');
@@ -61,7 +61,7 @@
       return;
     }
 
-    unfocus();
+    unfocus();    
   }
 
   $window.click( clickEvent );
@@ -140,7 +140,7 @@
     // setTimeout(function() {
     //   $window.trigger('resize');
     // }, 250);
-
+    
     if ($home) {
       // console.log("show home button");
       // $home.fadeIn();
@@ -208,7 +208,7 @@
 
   var muted = localStorage.getItem('sound') === '0';
 
-  $.get('./images/icons/sound-on.svg', function(resp) {
+  $.get('index_files//sound-on.svg', function(resp) {
     $soundOn = $(resp).find('svg').addClass('icon')
       .css({
         display: muted ? 'none' : 'block'
@@ -224,7 +224,7 @@
     $volume.append($soundOn);
   });
 
-  $.get('./images/icons/sound-off.svg', function(resp) {
+  $.get('index_files//sound-off.svg', function(resp) {
     $soundOff = $(resp).find('svg').addClass('icon')
       .css({
         display: !muted ? 'none' : 'block'
@@ -240,7 +240,7 @@
       $volume.append($soundOff);
   });
 
-  $.get('./images/icons/big-tour.svg', function(resp) {
+  $.get('index_files//big-tour.svg', function(resp) {
 
     $tour = $(resp).find('svg').addClass('icon')
       .attr('id', 'tour-button')
@@ -251,7 +251,7 @@
       });
     $iconNav.append($tour);
 
-    $.get('./images/icons/heat-vision.svg', function(resp) {
+    $.get('index_files//heat-vision.svg', function(resp) {
 
       $heatvision = $(resp).find('svg').addClass('icon')
         .click(function(e) {
@@ -266,7 +266,7 @@
         .tip('Toggle Spectral Index.');
       $iconNav.append($heatvision);
 
-      $.get('./images/icons/center-sun.svg', function(resp) {
+      $.get('index_files//center-sun.svg', function(resp) {
         $home = $(resp).find('svg').addClass('icon')
           .tip('Center camera position to the Sun.')
           .hover(function(e) {
@@ -306,10 +306,10 @@
     var y = (touch.pageY - $minimap.offset().top);
     position = cmap(y, 0, $minimap.height(), 0, 100);
 
-    updateCursorPosition();
+    updateCursorPosition();    
     root.scrollbaring = true;
     // $window
-    //   .bind('touchmove', dragTouch);
+    //   .bind('touchmove', dragTouch);    
   }
 
   function drag(e) {
@@ -320,12 +320,12 @@
 
   }
 
-  function dragTouch(e){
+  function dragTouch(e){    
     var event = e.originalEvent;
     if( event.touches.length != 1 )
-      return;
+      return;    
 
-    // event.preventDefault();
+    // event.preventDefault();    
     // event.stopImmediatePropagation();
     // Make sure the document doesn't scroll
     // document.body.scrollTop = document.body.scrollLeft = 0;
