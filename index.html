@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport"
+		content="user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
+	<meta name="google" value="notranslate">
+	<meta name="description"
+		content="An interactive 3D visualization of the stellar neighborhood, including over 100,000 nearby stars. Created for the Google Chrome web browser.">
+
+	<link rel="image_src">
+	<title>100,000 Stars</title>
+
+
+	<link rel="stylesheet" type="text/css" href="./index_files/style.css">
+	<link href="./index_files/css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+		.dg ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			clear: both
+		}
+
+		.dg.ac {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 0;
+			z-index: 0
+		}
+
+		.dg:not(.ac) .main {
+			overflow: hidden
+		}
+
+		.dg.main {
+			-webkit-transition: opacity 0.1s linear;
+			-o-transition: opacity 0.1s linear;
+			-moz-transition: opacity 0.1s linear;
+			transition: opacity 0.1s linear
+		}
+
+		.dg.main.taller-than-window {
+			overflow-y: auto
+		}
+
+		.dg.main.taller-than-window .close-button {
+			opacity: 1;
+			margin-top: -1px;
+			border-top: 1px solid #2c2c2c
+		}
+
+		.dg.main ul.closed .close-button {
+			opacity: 1 !important
+		}
+
+		.dg.main:hover .close-button,
+		.dg.main .close-button.drag {
+			opacity: 1
+		}
+
+		.dg.main .close-button {
+			-webkit-transition: opacity 0.1s linear;
+			-o-transition: opacity 0.1s linear;
+			-moz-transition: opacity 0.1s linear;
+			transition: opacity 0.1s linear;
+			border: 0;
+			position: absolute;
+			line-height: 19px;
+			height: 20px;
+			cursor: pointer;
+			text-align: center;
+			background-color: #000
+		}
+
+		.dg.main .close-button:hover {
+			background-color: #111
+		}
+
+		.dg.a {
+			float: right;
+			margin-right: 15px;
+			overflow-x: hidden
+		}
+
+		.dg.a.has-save ul {
+			margin-top: 27px
+		}
+
+		.dg.a.has-save ul.closed {
+			margin-top: 0
+		}
+
+		.dg.a .save-row {
+			position: fixed;
+			top: 0;
+			z-index: 1002
+		}
+
+		.dg li {
+			-webkit-transition: height 0.1s ease-out;
+			-o-transition: height 0.1s ease-out;
+			-moz-transition: height 0.1s ease-out;
+			transition: height 0.1s ease-out
+		}
+
+		.dg li:not(.folder) {
+			cursor: auto;
+			height: 27px;
+			line-height: 27px;
+			overflow: hidden;
+			padding: 0 4px 0 5px
+		}
+
+		.dg li.folder {
+			padding: 0;
+			border-left: 4px solid rgba(0, 0, 0, 0)
+		}
+
+		.dg li.title {
+			cursor: pointer;
+			margin-left: -4px
+		}
+
+		.dg .closed li:not(.title),
+		.dg .closed ul li,
+		.dg .closed ul li>* {
+			height: 0;
+			overflow: hidden;
+			border: 0
+		}
+
+		.dg .cr {
+			clear: both;
+			padding-left: 3px;
+			height: 27px
+		}
+
+		.dg .property-name {
+			cursor: default;
+			float: left;
+			clear: left;
+			width: 40%;
+			overflow: hidden;
+			text-overflow: ellipsis
+		}
+
+		.dg .c {
+			float: left;
+			width: 60%
+		}
+
+		.dg .c input[type=text] {
+			border: 0;
+			margin-top: 4px;
+			padding: 3px;
+			width: 100%;
+			float: right
+		}
+
+		.dg .has-slider input[type=text] {
+			width: 30%;
+			margin-left: 0
+		}
+
+		.dg .slider {
+			float: left;
+			width: 66%;
+			margin-left: -5px;
+			margin-right: 0;
+			height: 19px;
+			margin-top: 4px
+		}
+
+		.dg .slider-fg {
+			height: 100%
+		}
+
+		.dg .c input[type=checkbox] {
+			margin-top: 9px
+		}
+
+		.dg .c select {
+			margin-top: 5px
+		}
+
+		.dg .cr.function,
+		.dg .cr.function .property-name,
+		.dg .cr.function *,
+		.dg .cr.boolean,
+		.dg .cr.boolean * {
+			cursor: pointer
+		}
+
+		.dg .selector {
+			display: none;
+			position: absolute;
+			margin-left: -9px;
+			margin-top: 23px;
+			z-index: 10
+		}
+
+		.dg .c:hover .selector,
+		.dg .selector.drag {
+			display: block
+		}
+
+		.dg li.save-row {
+			padding: 0
+		}
+
+		.dg li.save-row .button {
+			display: inline-block;
+			padding: 0px 6px
+		}
+
+		.dg.dialogue {
+			background-color: #222;
+			width: 460px;
+			padding: 15px;
+			font-size: 13px;
+			line-height: 15px
+		}
+
+		#dg-new-constructor {
+			padding: 10px;
+			color: #222;
+			font-family: Monaco, monospace;
+			font-size: 10px;
+			border: 0;
+			resize: none;
+			box-shadow: inset 1px 1px 1px #888;
+			word-wrap: break-word;
+			margin: 12px 0;
+			display: block;
+			width: 440px;
+			overflow-y: scroll;
+			height: 100px;
+			position: relative
+		}
+
+		#dg-local-explain {
+			display: none;
+			font-size: 11px;
+			line-height: 17px;
+			border-radius: 3px;
+			background-color: #333;
+			padding: 8px;
+			margin-top: 10px
+		}
+
+		#dg-local-explain code {
+			font-size: 10px
+		}
+
+		#dat-gui-save-locally {
+			display: none
+		}
+
+		.dg {
+			color: #eee;
+			font: 11px 'Lucida Grande', sans-serif;
+			text-shadow: 0 -1px 0 #111
+		}
+
+		.dg.main::-webkit-scrollbar {
+			width: 5px;
+			background: #1a1a1a
+		}
+
+		.dg.main::-webkit-scrollbar-corner {
+			height: 0;
+			display: none
+		}
+
+		.dg.main::-webkit-scrollbar-thumb {
+			border-radius: 5px;
+			background: #676767
+		}
+
+		.dg li:not(.folder) {
+			background: #1a1a1a;
+			border-bottom: 1px solid #2c2c2c
+		}
+
+		.dg li.save-row {
+			line-height: 25px;
+			background: #dad5cb;
+			border: 0
+		}
+
+		.dg li.save-row select {
+			margin-left: 5px;
+			width: 108px
+		}
+
+		.dg li.save-row .button {
+			margin-left: 5px;
+			margin-top: 1px;
+			border-radius: 2px;
+			font-size: 9px;
+			line-height: 7px;
+			padding: 4px 4px 5px 4px;
+			background: #c5bdad;
+			color: #fff;
+			text-shadow: 0 1px 0 #b0a58f;
+			box-shadow: 0 -1px 0 #b0a58f;
+			cursor: pointer
+		}
+
+		.dg li.save-row .button.gears {
+			background: #c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;
+			height: 7px;
+			width: 8px
+		}
+
+		.dg li.save-row .button:hover {
+			background-color: #bab19e;
+			box-shadow: 0 -1px 0 #b0a58f
+		}
+
+		.dg li.folder {
+			border-bottom: 0
+		}
+
+		.dg li.title {
+			padding-left: 16px;
+			background: #000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+			cursor: pointer;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+		}
+
+		.dg .closed li.title {
+			background-image: url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)
+		}
+
+		.dg .cr.boolean {
+			border-left: 3px solid #806787
+		}
+
+		.dg .cr.function {
+			border-left: 3px solid #e61d5f
+		}
+
+		.dg .cr.number {
+			border-left: 3px solid #2fa1d6
+		}
+
+		.dg .cr.number input[type=text] {
+			color: #2fa1d6
+		}
+
+		.dg .cr.string {
+			border-left: 3px solid #1ed36f
+		}
+
+		.dg .cr.string input[type=text] {
+			color: #1ed36f
+		}
+
+		.dg .cr.function:hover,
+		.dg .cr.boolean:hover {
+			background: #111
+		}
+
+		.dg .c input[type=text] {
+			background: #303030;
+			outline: none
+		}
+
+		.dg .c input[type=text]:hover {
+			background: #3c3c3c
+		}
+
+		.dg .c input[type=text]:focus {
+			background: #494949;
+			color: #fff
+		}
+
+		.dg .c .slider {
+			background: #303030;
+			cursor: ew-resize
+		}
+
+		.dg .c .slider-fg {
+			background: #2fa1d6
+		}
+
+		.dg .c .slider:hover {
+			background: #3c3c3c
+		}
+
+		.dg .c .slider:hover .slider-fg {
+			background: #44abda
+		}
+	</style>
+	<style type="text/css">
+		.context {
+			z-index: 1000000;
+			line-height: 20px;
+			display: inline-block;
+			position: fixed;
+			top: 0px;
+			left: 0px;
+			min-width: 160px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			color: #fff;
+			background: #242424;
+			font-size: 9pt;
+			border: 1px solid #333333;
+			box-shadow: 4px 4px 3px -1px rgba(0, 0, 0, 0.5);
+			padding: 3px 0px;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		.context .item {
+			padding: 4px 19px;
+			cursor: default;
+			color: inherit;
+		}
+
+		.context .item:hover {
+			background: #4B4C4F;
+		}
+
+		.context .item:hover .hotkey {
+			color: #fff;
+		}
+
+		.context .disabled {
+			color: #878B90;
+		}
+
+		.context .disabled:hover {
+			background: inherit;
+		}
+
+		.context .disabled:hover .hotkey {
+			color: #878B90;
+		}
+
+		.context .separator {
+			margin: 4px 0px;
+			height: 0;
+			padding: 0;
+			border-top: 1px solid #454545;
+		}
+
+		.hotkey {
+			color: #878B90;
+			float: right;
+		}
+	</style>
+</head>
+
+<body onload="start()" oncontextmenu="return false">
+
+	<!-- Svg Filters -->
+	<filter id="svg-glow">
+		<feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+		<feOffset dx="2" dy="2" result="offsetblur"/>
+		<feMerge>
+			<feMergeNode/>
+			<feMergeNode in="SourceGraphic"/>
+		</feMerge>
+	</filter>
+
+
+	<div style="display:none">
+		<span id="marker_template" class="marker"><span class="name">
+		</span></span>
+
+		<span id="legacy_marker_template" class="legacymarker"><span class="name">
+		</span></span>
+	</div>
+
+	<div id="layout">
+		<div id="visualization" >
+
+			<div id="css-container">
+				<div id="css-world">
+					<div id="css-camera">
+						<!-- 2D overlay elements go in here -->
+					</div>
+				</div>
+			</div>
+			<div id="glContainer">
+				<!-- 3D webgl canvas here -->
+			</div>
+		</div>
+
+	<div id="icon-nav"></div>
+
+	<div id="spectral-graph">
+		<!-- <img src="images/spectral_color_index.png" border="0"> -->
+		<div id="heat-map"></div>
+		<p class="left">3,840&deg;K (cooler)</p>
+		<p class="center">7,300&deg;K</p>
+		<p class="right">42,000&deg;K (hotter)</p>
+		<h5>
+			B-V Stellar Color Index <br />
+			Temperatures in Kelvin
+		</h5>
+	</div>
+
+		<div id="detailContainer" style="padding-top: 10%;">
+			<div id="detailTitle">
+				<span>Sun</span>
+				<div id="detailClose">
+					<p id="zoom-back">
+					</p>
+					<p id="ex-out">
+						&times;
+					</p>
+				</div>
+			</div>
+			<div id="detailBody">
+				<p>
+				  The <b>Sun</b> is the <a href="http://en.wikipedia.org/wiki/Star" title="Star">star</a> at the center of the <a href="http://en.wikipedia.org/wiki/Solar_System" title="Solar System">Solar System</a>. It is almost perfectly <a href="http://en.wikipedia.org/wiki/Sphere" title="Sphere">spherical</a> and consists of hot <a href="http://en.wikipedia.org/wiki/Plasma_(physics)" title="Plasma (physics)">plasma</a> interwoven with <a href="http://en.wikipedia.org/wiki/Magnetic_field" title="Magnetic field">magnetic fields</a>.<sup id="cite_ref-11" class="reference"><a href="http://en.wikipedia.org/wiki/Sun#cite_note-11"><span>[</span>12<span>]</span></a></sup><sup id="cite_ref-12" class="reference"><a href="http://en.wikipedia.org/wiki/Sun#cite_note-12"><span>[</span>13<span>]</span></a></sup> It has a <a href="http://en.wikipedia.org/wiki/Diameter" title="Diameter">diameter</a> of about 1,392,684 km,<sup id="cite_ref-arxiv1203_4898_4-2" class="reference"><a href="http://en.wikipedia.org/wiki/Sun#cite_note-arxiv1203_4898-4"><span>[</span>5<span>]</span></a></sup> about 109&nbsp;times that of <a href="http://en.wikipedia.org/wiki/Earth" title="Earth">Earth</a>, and its mass (about 2<span style="margin:0 .15em 0 .25em">×</span>10<sup>30</sup>&nbsp;kilograms, 330,000&nbsp;times that of Earth) accounts for about 99.86% of the total mass of the Solar System.<sup id="cite_ref-Woolfson00_13-0" class="reference"><a href="http://en.wikipedia.org/wiki/Sun#cite_note-Woolfson00-13"><span>[</span>14<span>]</span></a></sup> Chemically, about three quarters of the Sun's mass consists of <a href="http://en.wikipedia.org/wiki/Hydrogen" title="Hydrogen">hydrogen</a>, while the rest is mostly <a href="http://en.wikipedia.org/wiki/Helium" title="Helium">helium</a>. The remainder (1.69%, which nonetheless equals 5,628&nbsp;times the mass of Earth) consists of heavier elements, including <a href="http://en.wikipedia.org/wiki/Oxygen" title="Oxygen">oxygen</a>, <a href="http://en.wikipedia.org/wiki/Carbon" title="Carbon">carbon</a>, <a href="http://en.wikipedia.org/wiki/Neon" title="Neon">neon</a> and <a href="http://en.wikipedia.org/wiki/Iron" title="Iron">iron</a>, among others.<sup id="cite_ref-basu2008_14-0" class="reference"><a href="http://en.wikipedia.org/wiki/Sun#cite_note-basu2008-14"><span>[</span>15<span>]</span></a></sup><span id="why_the_sun_is_yellow"></span>
+				</p>
+				<p>
+					Excerpt from <a href="http://en.wikipedia.org/wiki/Sun" id="excerpt-link">Wikipedia.</a>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="star-name">
+		<span>Sun</span>
+	</div>
+
+	<div id="meta">
+		<p>
+			<!-- Stuff info here! -->
+		</p>
+	</div>
+
+	<div id="minimap">
+		<div id="volume">
+<!-- 				<img src="images/icons/sound-on.svg" alt="" /> -->
+		</div>
+		<div id="zoom-levels">
+			<div id="zoom-backdrop"></div>
+			<div id="zoom-cursor"></div>
+		</div>
+		<div id="about">?</div>
+	</div>
+
+	<div id="loader">
+		<div>
+			<img src="index_files/loading6.gif" width="50" height="50" alt="" border="0" /></img>
+			<p id="loadtext">Loading the galaxy, please wait&hellip;</p>
+		</div>
+	</div>
+
+	<audio id="bgmusicA" src="index_files/bgmusic.ogg">
+	</audio>
+	<audio id="bgmusicB" src="index_files/bgmusic.ogg">
+	</audio>
+
+	<script src="index_files/dat.gui.min.js"></script>
+	<script src="index_files/three.min.js"></script>
+	<script src="index_files/tween.js"></script>
+	<script src="index_files/Detector.js"></script>
+	<script src="index_files/THREEx.KeyboardState.js"></script>
+	<script src="index_files/THREEx.WindowResize.js"></script>
+	<script src="index_files/jquery-1.7.1.min.js"></script>
+	<script src="index_files/underscore.js"></script>
+	<script src="index_files/jquery.mousewheel.js"></script>
+	<script src="index_files/jquery.preventMacBackScroll.js"></script>
+
+	<script src="index_files/util.js"></script>
+	<script src="index_files/mousekeyboard.js"></script>
+	<script src="index_files/urlArgs.js"></script>
+
+	<script>
+		var $loadText = $('#loadtext');
+		function setLoadMessage(msg){
+			$loadText.html(msg+"&hellip;");
+		}
+	</script>
+
+	<script src="index_files/director.js" type="text/javascript"></script>
+	<script src="index_files/infocallout.js" type="text/javascript"></script>
+	<script src="index_files/starsystems.js" type="text/javascript"></script>
+	<script src="index_files/starmodel.js" type="text/javascript"></script>
+	<script src="index_files/css3worldspace.js" type="text/javascript"></script>
+	<script src="index_files/helphud.js" type="text/javascript"></script>
+	<script src="index_files/spacehelpers.js" type="text/javascript"></script>
+	<script src="index_files/shaderlist.js" type="text/javascript"></script>
+	<script src="index_files/skybox.js" type="text/javascript"></script>
+	<script src="index_files/plane.js" type="text/javascript"></script>
+	<script src="index_files/guides.js" type="text/javascript"></script>
+	<script src="index_files/dust.js" type="text/javascript"></script>
+	<script src="index_files/lensflare.js" type="text/javascript"></script>
+	<script src="index_files/hipparcos.js" type="text/javascript"></script>
+	<script src="index_files/galaxy.js" type="text/javascript"></script>
+	<script src="index_files/solarsystem.js" type="text/javascript"></script>
+	<script src="index_files/sun.js" type="text/javascript"></script>
+	<script src="index_files/legacymarkers.js" type="text/javascript"></script>
+	<script src="index_files/marker.js" type="text/javascript"></script>
+	<script src="index_files/tour.js" type="text/javascript"></script>
+	<script src="index_files/main.js" type="text/javascript"></script>
+
+	<!-- Post main loading scripts -->
+	<script src="index_files/jquery.tooltip.js" type="text/javascript"></script>
+	<script src="index_files/minimap.js" type="text/javascript"></script>
+</body>
+
+</html>

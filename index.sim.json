@@ -1,0 +1,13 @@
+
+{
+    "items": [{
+        "type": "triggers",
+        "items": []
+    }, {
+        "type": "wiring",
+        "items": []
+    }, {
+        "type": "recordings",
+        "items": []
+    }]
+}
